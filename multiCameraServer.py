@@ -156,21 +156,33 @@ if __name__ == "__main__":
     
     camera.setResolution(640, 480)
     
-    cvSink = camera.getVideo()
+    cvSink = cs.getVideo()
 
+    img = np.zeros(shape=(480, 640, 3), dtype=np.uint8)
+    
     # loop forever
     while True:
-        cvSink.grabFrame()
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lower_green = np.array([75, 200, 200])
-        upper_green = np.array([85, 255, 255])
-        mask = cv2.inRange(hsv, lower_green, upper_green)
-        res = cv2.bitwise_and(frame,frame,mask=mask)
-        cv2.imshow('orig',frame)
-        cv2.imshow('fff',res)
+#        cvSink.grabFrame()
+#       hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+#        lower_green = np.array([75, 200, 200])
+#        upper_green = np.array([85, 255, 255])
+#        mask = cv2.inRange(hsv, lower_green, upper_green)
+#        res = cv2.bitwise_and(frame,frame,mask=mask)
+#        cv2.imshow('orig',frame)
+#        cv2.imshow('fff',res)
+#
+#        if cv2.waitKey(1) & 0xFF == ord('q'):
+#                break
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        time, img = cvSink.grabFrame(img)
+        if time == 0:
+            # Send the output the error.
+            outputStream.notifyError(cvSink.getError())
+            # skip the rest of the current iteration
+            continue
+
+        # Put a rectangle on the image
+        cv2.rectangle(img, (100, 100), (400, 400), (255, 255, 255), 5)
 
         #time.sleep(10)
     vid.release()
